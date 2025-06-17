@@ -1,0 +1,26 @@
+[
+  {
+    "email": "komal@gmail.com",
+    "password": "$2b$10$i/PB3OdrTtgJqKP6ooHH1eQwS.eAAGiiV/r2OgftsdC.omD7NZbvK"
+  },
+  {
+    "email": "k@gmail.com",
+    "password": "$2b$10$yzAo5mjWG/Zj6B/mzHMNJe0t3aWQNAX/4hUdAXfmx.8LCk4ZXqlwa"
+  },
+  {
+    "email": "muskan@gmail.com",
+    "password": "$2b$10$ELQLTFhyvxi6MZMnC8NncuqoHfdmHGWeAYo6AOVk3aWX2/gAZqkaG"
+  },
+  {
+    "email": "h@gmail.com",
+    "password": "$2b$10$7jeHbbv/DS7l122K0A.que6x2ft4B/1pudLZGgnMDPPfAO12Z8vpy"
+  },
+  {
+    "email": "m@gmail.com",
+    "password": "$2b$10$rloHAxvaXi4ANnJTdvP3IeoCM62LuYMRvDW2QEx27oeSrLdMIQq/i"
+  },
+  {
+    "email": "i@gmail.com",
+    "password": "$2b$10$P1dw8s06s0tqb37oL7UhHOpZvAM2CHKA/lvfoy3UtSbKoUWzlqQGS"
+  }
+]

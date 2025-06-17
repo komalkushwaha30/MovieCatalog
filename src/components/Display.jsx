@@ -1,0 +1,308 @@
+import { useState, useMemo , useEffect} from "react";
+import { useNavigate } from "react-router";
+import movieData from "../movies.json";
+import Card from "./Card";
+import PageUI from "./PageUI";
+import SearchBar from "./SearchBar";
+import Filter from "./Filter";
+import Select from "react-select";
+import { useColor } from "../context/colorContext";
+
+
+function Display() {
+  // this all is taken from the context 
+  const { darkMode, setDarkMode, logout } = useColor();
+  // products state to set the movie data 
+  const [products] = useState(movieData);
+  
+  
+  // this is to set the current page using useState, initial value is zero
+  const [currentPage, setCurrentPage] = useState(0);
+  // this is to set the search 
+  const [search, setSearch] = useState("");
+
+  // this is to set the ratings 
+  const [Rating, setRating] = useState("all");
+  // this is an array of genres
+  const [Genres, setGenres] = useState([]);
+  const [Years, setYears] = useState("all");
+  const [lengthRange, setLengthRange] = useState([60, 180]); 
+
+  const navigate = useNavigate();
+  const PageSize = 120;
+
+  function useDebouncedValue(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+const debouncedSearch = useDebouncedValue(search, 300); 
+
+  const filteredMovies = products.filter((item) => {
+    const query = debouncedSearch.toLowerCase();
+    return (
+      (typeof item.title === "string" &&
+        item.title.toLowerCase().includes(query)) ||
+      (typeof item.writers === "string" &&
+        item.writers.toLowerCase().includes(query)) ||
+      (typeof item.genres === "string" &&
+        item.genres.toLowerCase().includes(query)) ||
+      (Array.isArray(item.genres) &&
+        item.genres.join(" ").toLowerCase().includes(query)) ||
+      (typeof item.directors === "string" &&
+        item.directors.toLowerCase().includes(query))
+    );
+  });
+
+  const finalMovies = useMemo(() => {
+    let movies = filteredMovies;
+
+    if (Years !== "all") {
+      const yearVal = parseInt(Years, 10);
+      if (yearVal === 1700) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1700 && item.release_year <= 1750
+        );
+      } else if (yearVal === 1750) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1751 && item.release_year <= 1800
+        );
+      } else if (yearVal === 1800) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1801 && item.release_year <= 1850
+        );
+      } else if (yearVal === 1850) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1851 && item.release_year <= 1900
+        );
+      } else if (yearVal === 1900) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1901 && item.release_year <= 1950
+        );
+      } else if (yearVal === 1950) {
+        movies = movies.filter(
+          (item) => item.release_year >= 1951 && item.release_year <= 2000
+        );
+      } else if (yearVal === 2000) {
+        movies = movies.filter((item) => item.release_year >= 2001);
+      }
+    }
+
+    if (Genres.length > 0) {
+      movies = movies.filter((item) => {
+        const itemGenres = Array.isArray(item.genres)
+          ? item.genres
+          : [item.genres];
+        return Genres.some((g) => itemGenres.includes(g));
+      });
+    }
+
+    if (Rating !== "all") {
+      const ratingVal = parseInt(Rating, 10);
+      if (ratingVal === 10) {
+        movies = movies.filter((item) => item.imdb_rating === 10);
+      } else if (ratingVal === 8) {
+        movies = movies.filter(
+          (item) => item.imdb_rating < 10 && item.imdb_rating >= 8
+        );
+      } else if (ratingVal === 6) {
+        movies = movies.filter(
+          (item) => item.imdb_rating < 8 && item.imdb_rating >= 6
+        );
+      } else if (ratingVal === 4) {
+        movies = movies.filter(
+          (item) => item.imdb_rating < 6 && item.imdb_rating >= 4
+        );
+      } else if (ratingVal === 3) {
+        movies = movies.filter((item) => item.imdb_rating < 4);
+      }
+    }
+
+    movies = movies.filter(
+      (item) =>
+        item.length_in_min >= lengthRange[0] &&
+        item.length_in_min <= lengthRange[1]
+    );
+
+    return movies;
+  }, [filteredMovies, Years, Genres, Rating, lengthRange]);
+
+  const totalPages = Math.ceil(finalMovies.length / PageSize);
+  const start = currentPage * PageSize;
+  const end = start + PageSize;
+  const paginatedMovies = finalMovies.slice(start, end);
+ 
+  
+
+  const ratings = [
+    { label: "All", value: "all" },
+    { label: "10", value: "10" },
+    { label: "below 10", value: "8" },
+    { label: "below 8", value: "6" },
+    { label: "below 6", value: "4" },
+    { label: "below 3", value: "3" },
+  ];
+
+  const genres = [
+    { label: "All", value: "all" },
+    { label: "Romance", value: "Romance" },
+    { label: "History", value: "History" },
+    { label: "Biography", value: "Biography" },
+    { label: "Drama", value: "Drama" },
+    { label: "Adventure", value: "Adventure" },
+    { label: "Fantasy", value: "Fantasy" },
+    { label: "War", value: "War" },
+    { label: "Thriller", value: "Thriller" },
+    { label: "Crime", value: "Crime" },
+  ];
+
+  const years = [
+    { label: "All", value: "all" },
+    { label: "1700 to 1750", value: "1700" },
+    { label: "1751 to 1800", value: "1750" },
+    { label: "1801 to 1850", value: "1800" },
+    { label: "1851 to 1900", value: "1850" },
+    { label: "1901 to 1950", value: "1900" },
+    { label: "1951 to 2000", value: "1950" },
+    { label: "2000 to 2500", value: "2000" },
+  ];
+
+  function handlePage(pageNum) {
+    setCurrentPage(pageNum);
+  }
+  function handleLikeClick() {
+    navigate("/like");
+  }
+
+  function handleLogout(){
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("isAuthenticated")
+    logout();
+    navigate('/')
+  }
+
+  return (
+    <div className={darkMode ? "darkMode" : "lightMode"}>
+      <div className="display-container">
+        <div className="display-modebtn">
+          <button onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? "Light Mode" : "Dark Mode"}
+          </button>
+          <button className="like-btn" onClick={handleLikeClick}>Like List</button>
+          <button onClick={()=>handleLogout()}>Logout</button>
+        </div>
+        <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
+          Movie Catalog
+        </h1>
+
+        <div className="display-filters">
+          <div>
+            <label htmlFor="ratings">Ratings</label>
+            <Filter
+              menu={ratings}
+              name={"rating"}
+              setCurrentPage={setCurrentPage}
+              setValue={setRating}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="genres">Genres</label>
+            <Select
+              isMulti
+              options={genres.slice(1)} 
+              value={Genres.map((g) => ({ value: g, label: g }))}
+              onChange={(selectedOptions) => {
+                setGenres(selectedOptions.map((opt) => opt.value));
+                setCurrentPage(0);
+              }}
+              placeholder="Select genres..."
+              className="genre-select"
+              classNamePrefix="select"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="years">Years</label>
+            <Filter
+              menu={years}
+              name={"years"}
+              setCurrentPage={setCurrentPage}
+              setValue={setYears}
+            />
+          </div>
+
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
+
+
+        <div className="length-slider">
+          <label htmlFor="length-range">
+            Length (min): {lengthRange[0]} - {lengthRange[1]} mins
+          </label>
+          <input
+            type="range"
+            min={60}
+            max={240}
+            step={5}
+            value={lengthRange[0]}
+            onChange={(e) =>
+              setLengthRange([Number(e.target.value), lengthRange[1]])
+            }
+            style={{ width: "45%" }}
+          />
+          <input
+            type="range"
+            min={60}
+            max={240}
+            step={5}
+            value={lengthRange[1]}
+            onChange={(e) =>
+              setLengthRange([lengthRange[0], Number(e.target.value)])
+            }
+            style={{ width: "45%" }}
+          />
+        </div>
+
+        <PageUI
+          handlePage={handlePage}
+          totalPages={totalPages}
+          curretpage={currentPage}
+          setCurrentPage={setCurrentPage}
+          darkMode={darkMode}
+        />
+
+        <div className="movie-container">
+          {paginatedMovies.map((item, index) => (
+            <Card
+              key={index}
+              title={item.title}
+              img={item.poster}
+              rating={item.imdb_rating}
+              genre={item.genres}
+              className={darkMode ? "dark-card" : "light-card"}
+              item={item}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Display;
