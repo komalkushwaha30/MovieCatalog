@@ -23,8 +23,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="dashboard" element={<ProtectedRoute><Display /></ProtectedRoute>} />
-        <Route path="/:title" element={<Details />} />
-        <Route path="like" element={<Like />} />
+        <Route path="/:title" element={<ProtectedRoute><Details /></ProtectedRoute>} />
+        <Route path="like" element={<ProtectedRoute><Like /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>

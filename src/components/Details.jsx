@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useState } from "react";
 import movieData from '../movies.json';
 import { useColor } from "../context/colorContext";
@@ -8,15 +8,16 @@ function Details() {
     const { title } = useParams();
     const [movies] = useState(movieData);
     const { darkMode,like, setLike } = useColor();
-    const detailedItem = movies.find((item) => item.title.replace(/\?/g, "").trim() === title.trim());
+    const detailedItem = movies.find((item) => {
+        if (typeof item.title !== "string") return false;
+        return item.title.replace(/\?/g, "").trim() === title.trim();
+    });
 
     if (!detailedItem) {
         return <div className="details-container"><h2>Movie not found</h2></div>;
     }
 
-    function handleLike(item){
-        setLike([...like,item ])
-    }
+    
     
     // Find similar movies
     const similarMovies = movies.filter((item) => {

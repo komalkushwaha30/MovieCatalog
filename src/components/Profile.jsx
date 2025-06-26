@@ -14,6 +14,11 @@ function Profile() {
     smsAlert: true,
   });
   const [editing, setEditing] = useState(false);
+  const [reminders, setReminders] = useState(() => {
+    if (!userId) return {};
+    const data = localStorage.getItem(`reminders_${userId}`);
+    return data ? JSON.parse(data) : {};
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +53,46 @@ function Profile() {
     }
   }, [profile, userId]);
 
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Object.entries(reminders).forEach(([title, time]) => {
+        if (Date.now() > time) {
+          if (Notification.permission === "granted") {
+            new Notification(`Reminder: Watch ${title}`);
+          }
+          // Remove reminder after firing
+          const newReminders = { ...reminders };
+          delete newReminders[title];
+          setReminders(newReminders);
+        }
+      });
+    }, 60000); // check every minute
+    return () => clearInterval(interval);
+  }, [reminders, setReminders]);
+
+  // Save reminders to localStorage whenever they change
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`reminders_${userId}`, JSON.stringify(reminders));
+    }
+  }, [reminders, userId]);
+
+  // Reload reminders when userId changes
+  useEffect(() => {
+    if (userId) {
+      const data = localStorage.getItem(`reminders_${userId}`);
+      setReminders(data ? JSON.parse(data) : {});
+    } else {
+      setReminders({});
+    }
+  }, [userId]);
+
   if (!userId) {
     return (
       <div className={darkMode ? "darkMode" : "lightMode"}>
@@ -74,16 +119,33 @@ function Profile() {
     }
   }
 
+  function handleSetReminder(movie) {
+    const time = window.prompt(
+      "Set reminder in minutes (e.g. 60 for 1 hour, 1440 for 1 day):"
+    );
+    if (time) {
+      const remindAt = Date.now() + parseInt(time) * 60000;
+      setReminders({ ...reminders, [movie.title]: remindAt });
+      alert("Reminder set! You will get a desktop notification.");
+    }
+  }
+
+  function handleRemoveReminder(title) {
+    const newReminders = { ...reminders };
+    delete newReminders[title];
+    setReminders(newReminders);
+  }
+
   return (
     <div className={darkMode ? "darkMode" : "lightMode"}>
       <div className="dashboard">
         <aside className="sidebar">
           <button className="back-btn" onClick={() => navigate(-1)}>← Go Back</button>
-          <div className="logo">xPay</div>
+          <div className="logo">nFlix</div>
           <nav>
             <ul>
               <li><Link to="/dashboard">My Dashboard</Link></li>
-              <li><Link to="/profile">Accounts</Link></li>
+              <li><Link to="/profile">Profile</Link></li>
               <li><Link to="/like">Like playList</Link></li>
               <li><Link to="/">Login</Link></li>
               
@@ -153,6 +215,45 @@ function Profile() {
                         <span style={{ color: "#888", fontSize: "0.95em" }}>
                           {Array.isArray(movie.genres) ? movie.genres.join(", ") : movie.genres}
                         </span>
+                        <button
+                          onClick={() => handleSetReminder(movie)}
+                          style={{
+                            background: darkMode ? "#ffd600" : "#7b1f24",
+                            color: darkMode ? "#23272f" : "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            padding: "0.4rem 1rem",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                            marginLeft: "0.5rem",
+                            marginTop: "0.5rem"
+                          }}
+                        >
+                          Set Reminder
+                        </button>
+                        {reminders[movie.title] && (
+                          <div>
+                            <span style={{ color: "#a83238" }}>
+                              Reminder: {new Date(reminders[movie.title]).toLocaleString()}
+                            </span>
+                            <button
+                              onClick={() => handleRemoveReminder(movie.title)}
+                              style={{
+                                background: darkMode ? "#ffd600" : "#7b1f24",
+                                color: darkMode ? "#23272f" : "#fff",
+                                border: "none",
+                                borderRadius: "6px",
+                                padding: "0.4rem 1rem",
+                                cursor: "pointer",
+                                fontWeight: 600,
+                                marginLeft: "0.5rem",
+                                marginTop: "0.5rem"
+                              }}
+                            >
+                              Remove Reminder
+                            </button>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>

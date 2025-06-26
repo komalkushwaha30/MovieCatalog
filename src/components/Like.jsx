@@ -19,8 +19,7 @@ function Like() {
                     ) : (
                         like.map((item, idx) => (
                             <div className="like-card" key={idx}>
-                                <h2>{item.title}</h2>
-                                {/* Add more info if you want */}
+                                <h5>{item.title}</h5>
                                 <img src={item.poster} alt={item.title} className="details-poster" />
                                 <p>Rating : {item.imdb_rating}</p>
                                 <button onClick={()=>handleRemove(item.title)}>Remove</button>
@@ -34,15 +33,6 @@ function Like() {
     );
 }
 
-// Save likes for the current user
-function saveLikesForUser(userId, likes) {
-  localStorage.setItem(`likes_${userId}`, JSON.stringify(likes));
-}
 
-// Load likes for the current user
-function loadLikesForUser(userId) {
-  const data = localStorage.getItem(`likes_${userId}`);
-  return data ? JSON.parse(data) : [];
-}
 
 export default Like;

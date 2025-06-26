@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
 import { useColor } from "../context/colorContext";
 
+
 function Card({ title, img, rating, genre,item }) {
   const navigate = useNavigate()
-  const { darkMode,like, setLike  } = useColor();
-  
+  const { darkMode,like, setLike } = useColor();
+
   // checking if the item is liked or not 
   const isLiked = like.some((movie)=>movie.title === item.title)
   const buttonName = isLiked ? "Remove" : "Add"

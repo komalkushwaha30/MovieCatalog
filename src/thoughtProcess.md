@@ -165,6 +165,9 @@ I did this with genres and years as well
 - now we will keep the conditions like ratingVal = 10 , the filter the movies with ratings 10, and so on and store the filtered array in an variable known as movie
 
 
+Fixing the rating : I thought like if I keep the rating as 10 at first then everyone will watch the movie with highest rating so instead of that I have kept it as adjective like excellent, good, average etc
+
+
 - same I did with the years, and I took the gap of almost 50 years so that I can reduce the option in the dropdown, because user can get more confused by seeing a lot of options and may be sometimes they are not sure about the years of the movie when it released. 
 
 - and did the same with the Genres. I will chage the logic of genre once I have to make the genre for the multi selecting options. 
@@ -220,6 +223,19 @@ Logic part :
 -This keeps only movies where:
 length_in_min is greater than or equal to the min
 length_in_min is less than or equal to the max
+
+
+Fixing bug in the slider:
+- after performing the black box testing multiple time, I realised that in my range function , my minimum slider can become greater than the maximum slider and vice-versa. 
+-this was leading to show no items in the grid 
+-to solve that I initially thought that I will use the disable option in both of them, on the condition that in min (lengthRange[0]>= lengthRange[1])
+which means diable the input range when the smaller is greater that the bigger and vice versa. 
+-but the problem with this one was that after the ranges getting disabled, how should I bring them back to normal, because I cannot do any chnages since its disable. 
+- therefore I though I have to find a way by which the minimum number should not be reater that any maximum at any cost
+- for that I thought that keeping gap between them might workout. 
+- for that I want to keep the gap of atlest 5 becuase my gap size is five to that I want compare the value 
+- for that on the onChange event handler, I first converted the string value into the number, and then checked if the newNumber is less than larger number - 5 inorder to maintain the gap of 5. if that true means the large number atleast greater than 5, then set the newNumber as lengthRange[0] else do not do anything.
+-same I did with the lengthRange[1] but this time + 5 gap. 
 
 
 USER AUTHENTICATION
@@ -369,6 +385,25 @@ I have just showed a few info like image/poster and then rating and remove optio
 
 so that user can go through all the liked movies and I have dedicated one row for each item of liked list. 
 
+Debugging the Liked list 
+during the interview, I came across the problem that when I was clicking on card's like button therefor it was getting added to the playlist repeated times, becuase it becomes the loop hole in the functionality 
+
+we wanted that if the like playlist already have that movie in the list, then the add button should show the label as remove, vice-versa.
+
+My appraoch here was that finding the if the clicked element exists in the liked playlist, and then based on that I would have changed the name of the button. 
+
+for that I thought to filter the arrays and will get if the array exists or not, later realised that it, filter return an array and I am searching for a boolean value to check if the item exists or not. 
+
+Inorder to get the boolean value by using find functionality and it was working partially because find was returing the object of the array when the list of item was present else return undefined which is at the end a falsy value. 
+
+but after that I realised that some function return the true and false, therefore I applied  the some function on liked playlist inorder to check if the item exist or not then if its false, the add the element to the  liked list else do nothing. 
+
+but I also had to add the label on the button that it should be add or remove and for that as well, I would have required check if the clicked item in the playlist or not. for that, again I would have to use the some function. 
+
+therefore I move this variable "isLiked" at the global level so that I just have to write only once, and by the ternary operator, we assigned the button name based on if its liked or not and also handle the function where once the item is already there in the likeList then it shows remove on the button , and if we click on remove, I added the functionality of filter it remove the item. 
+
+by this procedure, we solved the bug, where if the item is already there in the liked playlist then it cannot be clicked again until we remove it 
+
 
 
 DETAILED PAGE 
@@ -446,6 +481,197 @@ And all of these are the idea that I can think of that can make this website mor
 
 
 
+PROFILE SECTION
+As I wanted to work on the profile section because I feel like the content is modified for the user, then they tends to stay more on the website. 
+therefore, in the profile section first I added their basic details section which show their email id, username and bio, and they can edit these as well. 
+
+then I thought, providing photos randomly will be something intresting, therefore I fetch the random photo from an api and set it as the display picture. 
+
+In the next part, I focus on analysing the choices of the user, and provide them some insigthful and personalise data to them, for that I have three sections, liked playlist , Your favourite genres and lastly Directors and cast. 
+
+
+now the question is where this data will come from. so it will come from the liked playlist of the user. 
+liked playlist will display the name of the movies.
+Favuorite genres will find all the genres present in the liked playlist,also it will count the count of the repetition of the genres and by the same way it will list the directors and cast.
+
+
+since it was looking pretty simple, herefor I added a side bar with the link attach to it 
 
 
 
+SIDEBAR NAVIGATION
+The idea was simple:
+I wanted users to quickly move between their profile, their dashboard, their liked playlist, or even go back to login/logout. So I added a sidebar on the left side with links like:
+
+My Dashboard
+
+Profile
+
+Like Playlist
+
+Login
+
+Each of these links helps the user navigate through the app easily without feeling lost. Also, I added a "← Go Back" button on top of the sidebar to allow users to go back to the previous page, which I felt adds a nice user experience.
+
+PROFILE PICTURE UPLOAD
+Initially, I was just fetching random avatars, but then I thought — what if the user wants to use their own image?
+
+So I added a feature where users can click on their profile picture and upload a new one. I use URL.createObjectURL to preview the uploaded image immediately, and I update the state and save it in localStorage, so even after a refresh, their uploaded picture is still there.
+
+EDITABLE FORM
+One thing I made sure to include was that the user can actually edit their name, bio, and phone number. I wrapped these fields in a simple form that appears when they click the “Edit Profile” button.
+
+When they submit the form, the data is saved again to localStorage so it's always remembered.
+
+SAVING TO LOCALSTORAGE
+Everything about the profile — the avatar, name, phone, bio — is saved in localStorage under a key like profile_user@example.com, so that each user can have their own profile data stored separately.
+
+This allowed me to simulate a logged-in user experience without needing a real backend. For me, as someone starting out, it was a great way to build something functional without having to deal with server-side logic just yet.
+
+PERSONALIZED INSIGHTS FROM LIKED PLAYLIST
+Then I came back to the analytics part, and built the three main insights:
+
+Liked Playlist: Directly shows the titles of all the movies the user has liked.
+
+Your Favorite Genres: Loops through all genres in liked movies, counts frequency, and shows the top 5.
+
+Directors and Cast: Uses sets to filter unique names from the liked movies, showing the user's favorite contributors.
+
+Each of these sections gives the user a more personalized view of their taste, which I feel can really increase engagement — because who doesn’t like learning about their own preferences?
+
+FINAL THOUGHTS
+By the end, I had a profile page that wasn’t just showing user info, but was also giving useful and engaging insights. It felt interactive, dynamic, and personalized — even though I was just using React, Context, and localStorage.
+
+I learned a lot about state management, controlled components, conditional rendering, and user experience through this process.
+
+If I were to take this forward, I'd probably:
+
+Add real authentication
+Connect to a backend for persistent storage
+Allow sharing of profiles or playlists with friends
+Add watch history and reminders
+
+
+
+
+"YOU MIGHT LIKE THESE AS WELL" SECTION
+After setting up the movie details page, I started thinking:
+
+“What can I show the user next that keeps them engaged after viewing a movie?”
+
+And that’s when I got the idea for a "You Might Also Like" recommendation section — something that suggests similar movies based on the one they’re currently viewing. Almost every streaming platform does this, and it really helps in keeping users hooked and exploring more content.
+
+STEP 1: FINDING SIMILAR MOVIES
+So, first I had to decide how to define “similarity” between movies. I broke it down into 3 simple criteria:
+
+- Same or overlapping genres (like both movies being thrillers or comedies)
+- Shared cast members (same actors or actresses)
+- Released within a similar time period (±5 years)
+
+for that , I first tried to avoid comparing the movie with itself
+
+
+So if even one of these three conditions matches, I include that movie in the recommendations list. Then I just slice it to the top 10 to keep it short and neat.
+
+STEP 2: CREATING A CUSTOM CAROUSEL
+Now that I had my list of similar movies, I didn’t want to show all of them in one long vertical list. That would take up too much space and look boring. So instead, I made a carousel-like component, where only a few cards show at a time and the user can scroll through them with arrows.
+
+To handle this I added a little logic:
+
+If screen width is less than 700px → show 1 movie at a time.
+
+Otherwise → show 3 movies in the view.
+
+There are “Next” and “Previous” arrows to scroll the list.
+
+The carousel just shifts the starting index of what’s being shown, using carouselIndex.
+
+
+For each similar movie:
+
+I show its poster, title, genres, and release year.
+When the user clicks a card, it navigates to that movie’s detail page using React Router’s navigate.
+This way, everything feels smooth and connected. You’re just one click away from discovering more movies.
+
+This part was really fun to build because:
+
+It gave the app a real recommendation system feel, even without AI or a backend.
+
+I learned how to filter and compare data in React.
+
+I also practiced building a carousel-style UI from scratch using just state and slicing.
+
+And overall, it made the movie detail page feel way more complete and user-friendly.
+
+
+
+NAVBAR AND FOOTER SECTION 
+
+Actually after building most of the functionality, I felt like everything is not arrange properly, and during interview, also I noticed that if the user want to go back from the like section then I have not provided any links and user might feel confused as to where t navigate. 
+
+for that I had to bring all the button like , darkmode, home page button, like playlist button to the navbar. 
+it was an important task because, I have provided the classname of the body based on the darkmode variable. 
+but since I have mentioned in the context therefore I can shift all the elements to the navbar.
+so I kept the name of the movie (NavFlix = Navgurukul + Netflix)
+then gave the homepage, like and profile section in the middle, 
+then the theme button and name of the user and at last logout option. 
+
+
+and I made a simple footer section at the end by mentioning year dynamically and writing rigth reserved and mentioned the creater's name. 
+
+
+
+DESKTOP REMINDER
+- This is something that I wanted for my website is that a reminder. I created this so that user can reply on this app, and can set the timer for watching their favourite movies. 
+- I have added this in the profile section where user can set and remove the reminder
+- working : 
+- when we like a movie , then we can see that in our profile section
+- when click on the set timer, a pop box will appear asking the time
+- then browser rest of the things 
+- it only shows up once. 
+
+- all the reminder are stored in the browser, in local storage 
+so that the reminder remain safe, even if we close the tab
+
+
+BRINGING MINOR CHANGES 
+1.Brought the pagination at the bottom because pagination button mostly stays below, otherwise the front is lookign very unorganized. 
+- also decreasing the number of movies to 72 so that user should not just keep on scrolling to reach at the end 
+- and why 72 because in the large devices, 4 movie cards are shown and therefore to complete the row , I want something divisible by 4 to show all completed row , that's why 72.
+
+
+
+2. Reset function : 
+I was keep on checking the filter and then reloading it again and again, leading to break my flow, therefor I build the reset functionality which will bring all the filters to its initial value just in one click. 
+
+
+3. Range input thinkess : 
+I also felt like the range part is covering very less space and may its presence is less visible and pretty confusing becuase of two input so I made the input width a littl wider 
+
+
+4. Alignment of  the filters : 
+I felt like the way I placed filtered were pretty crowded because, few of them were not aligning together vertically and horzontally and since its my first part of the website therefor , I wanted to make it look pleasing. 
+therefore I divided them all in two rows and kept the search at first, because I think it will easy for the user to find search as the first option. 
+
+5. Fixing the bug of detailed search : 
+initially I was using this function to search the movies to showing in detailed page 
+item.title.replace(/\?/g, "").trim() === title.trim();
+I was using this question mark because there ware a lot movies having question mark but during fetching from params it was not visible 
+
+for that we this function only calls when the item.title is only a strings because this fucntion of replace only works on the strings , therefore to prevent it from any further error we are also checking if the title is a string or not. 
+
+
+6. Carousel in the front : 
+- even after applying the better alignment of the filters, it was still looking basic, so I added a carousel which will work automatically after particular interval, making the front page more attractive. 
+for that I have first made thought of making the array of image from the movies data provided and then map over it to show the carousel. 
+- The problem was that multiple images were not working, so I manually find a bunch of images and put them in a array 
+- Then I made a seperate component , just in case of resuability 
+- later I set up the state, here we are using useState and useRef
+- then bceuase we want it to happen without any user interaction , we will use useEffect. 
+- and inside that we will use the setTimeout function that will keep on updating its index.
+- at last we will render the image with the fading transition
+- One small but important detail I added was a dark gradient overlay on top of the images. This helps if I want to place text, buttons, or logos on top — they’ll stay readable no matter how bright the image behind them is.
+
+
+
+These are were the few changes, I tried to implement inorder make the website more eye catching. 

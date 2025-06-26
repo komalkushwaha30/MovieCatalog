@@ -15,28 +15,41 @@ export function ColorProvider({ children }) {
     return data ? JSON.parse(data) : [];
   });
 
-  // Reload likes when userId changes
+  // Reminder state
+  const [reminders, setReminders] = useState(() => {
+    if (!userId) return {};
+    const data = localStorage.getItem(`reminders_${userId}`);
+    return data ? JSON.parse(data) : {};
+  });
+
+  // Reload likes and reminders when userId changes
   useEffect(() => {
     if (userId) {
-      const data = localStorage.getItem(`likes_${userId}`);
-      setLike(data ? JSON.parse(data) : []);
+      const likesData = localStorage.getItem(`likes_${userId}`);
+      setLike(likesData ? JSON.parse(likesData) : []);
+
+      const remindersData = localStorage.getItem(`reminders_${userId}`);
+      setReminders(remindersData ? JSON.parse(remindersData) : {});
     } else {
       setLike([]);
+      setReminders({});
     }
   }, [userId]);
 
-  // Save likes for this user
+  // Save likes and reminders for this user
   useEffect(() => {
     if (userId) {
       localStorage.setItem(`likes_${userId}`, JSON.stringify(like));
+      localStorage.setItem(`reminders_${userId}`, JSON.stringify(reminders));
     }
-  }, [like, userId]);
+  }, [like, reminders, userId]);
 
   // Logout logic
   function logout() {
     localStorage.removeItem("currentUser");
     setUserId(null);
     setLike([]);
+    setReminders({});
   }
 
   // Login logic
@@ -46,7 +59,10 @@ export function ColorProvider({ children }) {
   }
 
   return (
-    <ColorContext.Provider value={{ darkMode, setDarkMode, like, setLike, logout, login, userId }}>
+    <ColorContext.Provider value={{
+      darkMode, setDarkMode, like, setLike, logout, login, userId,
+      reminders, setReminders
+    }}>
       {children}
     </ColorContext.Provider>
   );

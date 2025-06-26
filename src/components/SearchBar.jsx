@@ -9,7 +9,7 @@ function SearchBar( {setSearch, setCurrentPage}){
     return(
         <>
             <div className="searchbar">
-                <label htmlFor="search-input">Search</label>
+                
                 <input className="searchbar-input" type="text" placeholder="Enter the title or any other attribute" onChange={(e)=>handleSeach(e)} />
             </div>
         </>

@@ -30,5 +30,21 @@
   {
     "email": "cba@gmail.com",
     "password": "$2b$10$d/fSGHyLYHe5SqOaC00Ixul8FuidO.Mx2WVZmi4uHaa0lk3BApFVe"
+  },
+  {
+    "email": "s@gmail.coms",
+    "password": "$2b$10$K2OXAL.SNsvVER.McTU7iOaJAtItGl8WsNRgIZQfoszUT5iMM1YqC"
+  },
+  {
+    "email": "mussu@gmail.com",
+    "password": "$2b$10$jucT.ta1TXzQqJ2woa/CUOewrUd/u78biyB6y41JJRHVBYWK1wDIy"
+  },
+  {
+    "email": "komalkushwaha23@navgurukul.org",
+    "password": "$2b$10$Nz8P/RmECjtubusRy.bLIuZVz38kD9AcEYtkyZwNhBPqpABWDMlmG"
+  },
+  {
+    "email": "z@gmail.com",
+    "password": "$2b$10$MehspDhx.CE2zS2n3Ohilu97XXjdMoXjgu/TBBe6UFQ20al7bSmLq"
   }
 ]

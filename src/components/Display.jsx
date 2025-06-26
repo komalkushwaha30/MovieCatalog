@@ -7,27 +7,21 @@ import SearchBar from "./SearchBar";
 import Filter from "./Filter";
 import Select from "react-select";
 import { useColor } from "../context/colorContext";
+import BackgroundCarousel from "./BackgroundCarousel";
 
 function Display() {
-  // this all is taken from the context
-  const { darkMode, setDarkMode, logout } = useColor();
-  // products state to set the movie data
+  
+  const { darkMode, logout } = useColor();
   const [products] = useState(movieData);
-
-  // this is to set the current page using useState, initial value is zero
   const [currentPage, setCurrentPage] = useState(0);
-  // this is to set the search
   const [search, setSearch] = useState("");
-
-  // this is to set the ratings
   const [Rating, setRating] = useState("all");
-  // this is an array of genres
   const [Genres, setGenres] = useState([]);
   const [Years, setYears] = useState("all");
   const [lengthRange, setLengthRange] = useState([60, 180]);
 
   const navigate = useNavigate();
-  const PageSize = 120;
+  const PageSize = 72;
 
   function useDebouncedValue(value, delay) {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -177,37 +171,86 @@ function Display() {
   function handlePage(pageNum) {
     setCurrentPage(pageNum);
   }
-  function handleLikeClick() {
-    navigate("/like");
-  }
-
-  function handleLogout() {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("isAuthenticated");
-    logout();
-    navigate("/");
-  }
-
+  
+  
   return (
+    <>
+      <BackgroundCarousel height="65vh" />
     <div className={darkMode ? "darkMode" : "lightMode"}>
       <div className="display-container">
-        
         <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
           Movie Catalog
         </h1>
 
-        <div className="display-filters">
-          <div>
+        {/* First Row: Search, Ratings, Years */}
+        <div className="display-filters-row">
+          <div className="filter-group">
+            <label htmlFor="search">Search</label>
+            <SearchBar
+              search={search}
+              setSearch={setSearch}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+
+          <div className="filter-group">
             <label htmlFor="ratings">Ratings</label>
             <Filter
               menu={ratings}
               name={"rating"}
               setCurrentPage={setCurrentPage}
               setValue={setRating}
+              value={Rating}
             />
           </div>
 
-          <div>
+          <div className="filter-group">
+            <label htmlFor="years">Years</label>
+            <Filter
+              menu={years}
+              name={"years"}
+              setCurrentPage={setCurrentPage}
+              setValue={setYears}
+              value = {Years}
+            />
+          </div>
+        </div>
+
+        {/* Second Row: Length, Genres, Reset Filters */}
+        <div className="display-filters-row">
+          <div className="filter-group length-slider">
+            <label htmlFor="length-range">
+              Length (min): {lengthRange[0]} - {lengthRange[1]} mins
+            </label>
+            <input
+              type="range"
+              min={60}
+              max={240}
+              step={5}
+              value={lengthRange[0]}
+              onChange={(e) => {
+                const newMin = Number(e.target.value);
+                if (newMin <= lengthRange[1] - 5) {
+                  setLengthRange([newMin, lengthRange[1]]);
+                }
+              }}
+            />
+            <input
+              type="range"
+              min={60}
+              max={240}
+              step={5}
+              value={lengthRange[1]}
+              onChange={(e) => {
+                const newMax = Number(e.target.value);
+                if (newMax >= lengthRange[0] + 5) {
+                  setLengthRange([lengthRange[0], newMax]);
+                }
+              }}
+            />
+          </div>
+
+          <div className="filter-group">
             <label htmlFor="genres">Genres</label>
             <Select
               isMulti
@@ -223,64 +266,37 @@ function Display() {
             />
           </div>
 
-          <div>
-            <label htmlFor="years">Years</label>
-            <Filter
-              menu={years}
-              name={"years"}
-              setCurrentPage={setCurrentPage}
-              setValue={setYears}
-            />
+          <div className="filter-group" style={{
+            display: "flex",
+            alignItems: "flex-end", // Align to the bottom of the row if others are taller
+          }}>
+            <button
+              onClick={() => {
+                setSearch("");
+                setRating("all");
+                setGenres([]);
+                setYears("all");
+                setLengthRange([60, 180]);
+                setCurrentPage(0);
+              }}
+              style={{
+                background: darkMode ? "#ffd600" : "#7b1f24",
+                color: darkMode ? "#23272f" : "#fff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "0.6rem 1.5rem",
+                fontWeight: 600,
+                fontSize: "1rem",
+                cursor: "pointer",
+                transition: "background 0.2s, color 0.2s",
+                width: "100%", // Make the button fill its container
+                minHeight: "44px" // Match height of other inputs
+              }}
+            >
+              Reset Filters
+            </button>
           </div>
-
-          <SearchBar
-            search={search}
-            setSearch={setSearch}
-            setCurrentPage={setCurrentPage}
-          />
-        </div>
-
-        <div className="length-slider">
-          <label htmlFor="length-range">
-            Length (min): {lengthRange[0]} - {lengthRange[1]} mins
-          </label>
-          <input
-            type="range"
-            min={60}
-            max={240}
-            step={5}
-            value={lengthRange[0]}
-            onChange={(e) => {
-              const newMin = Number(e.target.value);
-              if (newMin <= lengthRange[1] - 5) {
-                setLengthRange([newMin, lengthRange[1]]);
-              }
-            }}
-            style={{ width: "45%" }}
-          />
-          <input
-            type="range"
-            min={60}
-            max={240}
-            step={5}
-            value={lengthRange[1]}
-            onChange={(e) => {
-              const newMax = Number(e.target.value);
-              if (newMax >= lengthRange[0] + 5) {
-                setLengthRange([lengthRange[0], newMax]);
-              }
-            }}
-            style={{ width: "45%" }}
-          />
-        </div>
-
-        <PageUI
-          handlePage={handlePage}
-          totalPages={totalPages}
-          curretpage={currentPage}
-          setCurrentPage={setCurrentPage}
-          darkMode={darkMode}
-        />
+        </div> {/* End of display-filters-row for second row */}
 
         <div className="movie-container">
           {paginatedMovies.map((item, index) => (
@@ -295,8 +311,17 @@ function Display() {
             />
           ))}
         </div>
+
+        <PageUI
+          handlePage={handlePage}
+          totalPages={totalPages}
+          curretpage={currentPage}
+          setCurrentPage={setCurrentPage}
+          darkMode={darkMode}
+        />
       </div>
     </div>
+    </>
   );
 }
 
