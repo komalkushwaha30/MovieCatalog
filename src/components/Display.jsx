@@ -191,18 +191,7 @@ function Display() {
   return (
     <div className={darkMode ? "darkMode" : "lightMode"}>
       <div className="display-container">
-        <div className="display-modebtn">
-          <button onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </button>
-          <button className="like-btn" onClick={handleLikeClick}>
-            Like List
-          </button>
-          <button onClick={() => handleLogout()}>Logout</button>
-          <button className="profile-btn" onClick={() => navigate("/profile")}>
-            Profile
-          </button>
-        </div>
+        
         <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
           Movie Catalog
         </h1>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import { useColor } from "../context/colorContext";
@@ -11,12 +11,22 @@ const loginUser = async (email, password) => {
   return response.data;
 };
 
+
+
 function Login() {
+
+ 
+
   const { darkMode, setDarkMode, login} = useColor();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+  document.body.className = darkMode ? "darkMode" : "lightMode";
+}, [darkMode]);
+
 
   const handleLogin = async (email, password) => {
     try {

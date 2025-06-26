@@ -1,31 +1,36 @@
 // kindly check out thoughtProcess.md
 import "./App.css";
-import { Routes, Route } from "react-router"
+import { Routes, Route, useLocation } from "react-router";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Display from "./components/Display"
+import Display from "./components/Display";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Details from "./components/Details";
 import Like from "./components/Like";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
-function App() {
-  
-  
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-  return(
+function App() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/" || location.pathname === "/register";
+
+  return (
     <>
+      {!hideNavbar && <Navbar />}
       <Routes>
-        <Route path="/" element={<Login/>} />
+        <Route path="/" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="dashboard" element={<ProtectedRoute><Display/></ProtectedRoute>} />
-        <Route path="/:title" element={<Details/>} />
-        <Route path="like" element={<Like/>} />
+        <Route path="dashboard" element={<ProtectedRoute><Display /></ProtectedRoute>} />
+        <Route path="/:title" element={<Details />} />
+        <Route path="like" element={<Like />} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="*" element={<NotFound/>}/>
+        <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </>
-  )
+  );
 }
 
 export default App;
