@@ -1,4 +1,4 @@
-import { useState, useMemo , useEffect} from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import movieData from "../movies.json";
 import Card from "./Card";
@@ -8,46 +8,44 @@ import Filter from "./Filter";
 import Select from "react-select";
 import { useColor } from "../context/colorContext";
 
-
 function Display() {
-  // this all is taken from the context 
+  // this all is taken from the context
   const { darkMode, setDarkMode, logout } = useColor();
-  // products state to set the movie data 
+  // products state to set the movie data
   const [products] = useState(movieData);
-  
-  
+
   // this is to set the current page using useState, initial value is zero
   const [currentPage, setCurrentPage] = useState(0);
-  // this is to set the search 
+  // this is to set the search
   const [search, setSearch] = useState("");
 
-  // this is to set the ratings 
+  // this is to set the ratings
   const [Rating, setRating] = useState("all");
   // this is an array of genres
   const [Genres, setGenres] = useState([]);
   const [Years, setYears] = useState("all");
-  const [lengthRange, setLengthRange] = useState([60, 180]); 
+  const [lengthRange, setLengthRange] = useState([60, 180]);
 
   const navigate = useNavigate();
   const PageSize = 120;
 
   function useDebouncedValue(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+    const [debouncedValue, setDebouncedValue] = useState(value);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
 
-  return debouncedValue;
-}
+    return debouncedValue;
+  }
 
-const debouncedSearch = useDebouncedValue(search, 300); 
+  const debouncedSearch = useDebouncedValue(search, 300);
 
   const filteredMovies = products.filter((item) => {
     const query = debouncedSearch.toLowerCase();
@@ -142,16 +140,14 @@ const debouncedSearch = useDebouncedValue(search, 300);
   const start = currentPage * PageSize;
   const end = start + PageSize;
   const paginatedMovies = finalMovies.slice(start, end);
- 
-  
 
   const ratings = [
     { label: "All", value: "all" },
-    { label: "10", value: "10" },
-    { label: "below 10", value: "8" },
-    { label: "below 8", value: "6" },
-    { label: "below 6", value: "4" },
-    { label: "below 3", value: "3" },
+    { label: "Excellent (10)", value: "10" },
+    { label: "Great (8 - 9.9)", value: "8" },
+    { label: "Good (6 - 7.9)", value: "6" },
+    { label: "Average (4 - 5.9)", value: "4" },
+    { label: "Poor (< 4)", value: "3" },
   ];
 
   const genres = [
@@ -185,11 +181,11 @@ const debouncedSearch = useDebouncedValue(search, 300);
     navigate("/like");
   }
 
-  function handleLogout(){
+  function handleLogout() {
     localStorage.removeItem("currentUser");
-    localStorage.removeItem("isAuthenticated")
+    localStorage.removeItem("isAuthenticated");
     logout();
-    navigate('/')
+    navigate("/");
   }
 
   return (
@@ -199,8 +195,13 @@ const debouncedSearch = useDebouncedValue(search, 300);
           <button onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? "Light Mode" : "Dark Mode"}
           </button>
-          <button className="like-btn" onClick={handleLikeClick}>Like List</button>
-          <button onClick={()=>handleLogout()}>Logout</button>
+          <button className="like-btn" onClick={handleLikeClick}>
+            Like List
+          </button>
+          <button onClick={() => handleLogout()}>Logout</button>
+          <button className="profile-btn" onClick={() => navigate("/profile")}>
+            Profile
+          </button>
         </div>
         <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
           Movie Catalog
@@ -221,7 +222,7 @@ const debouncedSearch = useDebouncedValue(search, 300);
             <label htmlFor="genres">Genres</label>
             <Select
               isMulti
-              options={genres.slice(1)} 
+              options={genres.slice(1)}
               value={Genres.map((g) => ({ value: g, label: g }))}
               onChange={(selectedOptions) => {
                 setGenres(selectedOptions.map((opt) => opt.value));
@@ -250,7 +251,6 @@ const debouncedSearch = useDebouncedValue(search, 300);
           />
         </div>
 
-
         <div className="length-slider">
           <label htmlFor="length-range">
             Length (min): {lengthRange[0]} - {lengthRange[1]} mins
@@ -261,9 +261,12 @@ const debouncedSearch = useDebouncedValue(search, 300);
             max={240}
             step={5}
             value={lengthRange[0]}
-            onChange={(e) =>
-              setLengthRange([Number(e.target.value), lengthRange[1]])
-            }
+            onChange={(e) => {
+              const newMin = Number(e.target.value);
+              if (newMin <= lengthRange[1] - 5) {
+                setLengthRange([newMin, lengthRange[1]]);
+              }
+            }}
             style={{ width: "45%" }}
           />
           <input
@@ -272,9 +275,12 @@ const debouncedSearch = useDebouncedValue(search, 300);
             max={240}
             step={5}
             value={lengthRange[1]}
-            onChange={(e) =>
-              setLengthRange([lengthRange[0], Number(e.target.value)])
-            }
+            onChange={(e) => {
+              const newMax = Number(e.target.value);
+              if (newMax >= lengthRange[0] + 5) {
+                setLengthRange([lengthRange[0], newMax]);
+              }
+            }}
             style={{ width: "45%" }}
           />
         </div>

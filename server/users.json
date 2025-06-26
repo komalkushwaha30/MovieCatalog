@@ -22,5 +22,13 @@
   {
     "email": "i@gmail.com",
     "password": "$2b$10$P1dw8s06s0tqb37oL7UhHOpZvAM2CHKA/lvfoy3UtSbKoUWzlqQGS"
+  },
+  {
+    "email": "abc@gmail.com",
+    "password": "$2b$10$uEs6w8GOleuf/6UnZnn77ex6lKNs8FwkKDqgo3InwaMlXsiil.ziS"
+  },
+  {
+    "email": "cba@gmail.com",
+    "password": "$2b$10$d/fSGHyLYHe5SqOaC00Ixul8FuidO.Mx2WVZmi4uHaa0lk3BApFVe"
   }
 ]

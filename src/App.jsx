@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Details from "./components/Details";
 import Like from "./components/Like";
 import NotFound from "./components/NotFound";
+import Profile from "./components/Profile";
 function App() {
   
   
@@ -20,6 +21,7 @@ function App() {
         <Route path="dashboard" element={<ProtectedRoute><Display/></ProtectedRoute>} />
         <Route path="/:title" element={<Details/>} />
         <Route path="like" element={<Like/>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="*" element={<NotFound/>}/>
       </Routes>
     </>
