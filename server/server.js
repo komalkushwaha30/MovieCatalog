@@ -18,7 +18,10 @@ import cors from 'cors';
 const app = express();
 
 // Allow requests from other sites (frontend).
-app.use(cors());
+app.use(cors({
+  origin: "https://moviecatalog-frontend-n94m.onrender.com"
+}));
+
 
 // Parse incoming JSON data automatically.
 app.use(express.json());
