@@ -7,7 +7,7 @@ import "../App.css";
 // Login function that calls the backend
 const loginUser = async (email, password) => {
   const credentials = { email, password };
-  const response = await axios.post(`https://moviecatalog-backend-21c8.onrender.com`, credentials);
+  const response = await axios.post(`https://moviecatalog-backend-21c8.onrender.com/login`, credentials);
   return response.data;
 };
 
