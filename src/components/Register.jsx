@@ -7,7 +7,7 @@ import "../App.css";
 // Function to call backend register API
 const registerUser = async (email, password) => {
   const credentials = { email, password };
-  const response = await axios.post(`http://localhost:5000/register`, credentials);
+  const response = await axios.post(`https://moviecatalog-backend-21c8.onrender.com/register`, credentials);
   return response.data;
 };
 
